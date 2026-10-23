@@ -63,6 +63,17 @@
   details[open] summary::after{content:"–"}
   details ol{padding:0 16px 14px 36px;color:var(--muted);font-size:15px}
   details li{margin:4px 0}
+  .case{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:4px}
+  .case div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .case h3{font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .case p,.case li{color:var(--muted);font-size:15px}
+  .case ul{padding-left:18px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .stat b{display:block;font-size:26px;font-family:"JetBrains Mono",monospace}
+  .stat span{font-size:13px;color:var(--muted)}
+  .airports{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .airports span{font-family:"JetBrains Mono",monospace;font-size:13px;padding:4px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
          background:var(--ok);color:#06210f;font-weight:600;padding:10px 16px;border-radius:10px;transition:.2s;font-size:14px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -86,7 +97,42 @@
 </header>
 
 <main class="wrap">
-  <div class="demo">⚠ Demo with fictional data. Built for a transportation operation running in several U.S. cities at once, which needed one portal for each city's time, suppliers, accounts, cameras, and company guidelines.</div>
+  <div class="demo">⚠ Demo version: all accounts, users, and passwords shown here are fictional.</div>
+
+  <h2>Case study</h2>
+  <div class="case">
+    <div>
+      <h3>The client</h3>
+      <p>A U.S. ground transportation company moving airline crews between airports and hotels in 8 cities, across 4 time zones, 24/7.</p>
+    </div>
+    <div>
+      <h3>The challenge</h3>
+      <ul>
+        <li>Each city and airline used a different supplier portal and login.</li>
+        <li>Dispatchers had to track local time in every city to avoid late pickups.</li>
+        <li>Accounts, camera access, and company rules were spread across emails and notes.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>The solution</h3>
+      <p>One lightweight web portal: live clocks per city, one-click access to every supplier portal, team accounts, fleet camera status, pickup locations, and the company's dispatch guidelines, all in one screen.</p>
+    </div>
+    <div>
+      <h3>The result</h3>
+      <ul>
+        <li>Faster logins and handovers between shifts.</li>
+        <li>Fewer time-zone mistakes on pickups.</li>
+        <li>New dispatchers trained with one link instead of scattered documents.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>8</b><span>cities</span></div>
+    <div class="stat"><b>9</b><span>airports</span></div>
+    <div class="stat"><b>4</b><span>time zones</span></div>
+    <div class="stat"><b>24/7</b><span>operation</span></div>
+  </div>
+  <div class="airports"><span>BOS</span><span>JFK</span><span>LGA</span><span>EWR</span><span>CMH</span><span>DEN</span><span>SLC</span><span>PHX</span><span>SEA</span></div>
 
   <h2>Live city clocks</h2>
   <div class="clocks" id="clocks"></div>

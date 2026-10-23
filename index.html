@@ -250,7 +250,10 @@ function setupScroll(frame, i){
   const box = frame.parentElement;
   const measure = () => {
     let h = 1600;
-    try { const d = frame.contentDocument; h = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight); } catch(e) {}
+    try {
+      frame.style.height = "800px"; // measure at a normal phone height so vh-based layouts don't inflate it
+      const d = frame.contentDocument; h = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight);
+    } catch(e) {}
     h = Math.min(Math.max(h, 800), 3200);
     frame.style.height = h + "px";
     const dist = h * 0.5 - VIEW_H;

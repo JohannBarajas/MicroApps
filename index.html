@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Johan Barajas | Portfolio</title>
+<meta name="description" content="Revit/AutoCAD Drafter & BIM Modeler with a Civil Engineering degree. Drafting portfolio and micro apps.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     ✏️ PARA EDITAR: baja hasta la sección "TUS DATOS" (en el <script>)
+     Ahí agregas proyectos de planos y apps. No necesitas tocar el diseño.
+     ========================================================= */
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --text:#14171c; --muted:#5b6472;
+    --line:#e3e6eb; --accent:#1d4ed8; --accent-soft:#e8eefc; --blueprint:#0f2a4a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+  /* Nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(246,247,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+  .logo{font-weight:700;letter-spacing:-.02em}
+  .links{display:flex;gap:6px}
+  .links a{padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:var(--muted)}
+  .links a:hover{background:var(--accent-soft);color:var(--accent)}
+
+  /* Hero */
+  .hero{background:var(--blueprint);color:#fff;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;opacity:.12;
+    background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+    background-size:32px 32px}
+  .hero .wrap{position:relative;padding:72px 16px 64px}
+  .hero h1{font-size:clamp(32px,6vw,52px);letter-spacing:-.03em;line-height:1.1}
+  .hero .role{margin-top:12px;font-size:clamp(16px,2.4vw,20px);color:#c9d6ea}
+  .hero p{margin-top:16px;max-width:620px;color:#dbe4f2}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .tags span{font-size:13px;padding:5px 10px;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+  .btn{display:inline-block;padding:11px 18px;border-radius:10px;font-weight:600;font-size:15px}
+  .btn.primary{background:#fff;color:var(--blueprint)}
+  .btn.ghost{border:1px solid rgba(255,255,255,.45);color:#fff}
+
+  /* Sections */
+  section{padding:64px 0}
+  .head{margin-bottom:28px}
+  .head h2{font-size:clamp(24px,4vw,32px);letter-spacing:-.02em}
+  .head p{color:var(--muted);margin-top:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(15,42,74,.10)}
+  .thumb{aspect-ratio:16/10;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;color:var(--accent)}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .body h3{font-size:18px}
+  .body p{color:var(--muted);font-size:15px;flex:1}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chips span{font-size:12px;background:var(--bg);border:1px solid var(--line);padding:3px 8px;border-radius:6px;color:var(--muted)}
+  .open{margin-top:8px;align-self:flex-start;background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font-size:14px;font-weight:600}
+  .open.off{background:var(--line);color:var(--muted);pointer-events:none}
+
+  footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px;text-align:center}
+
+  @media (max-width:520px){
+    .links a{padding:6px 8px;font-size:13px}
+    .logo{font-size:15px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top">Johan Barajas</a>
+    <div class="links">
+      <a href="#drafting">Drafting & BIM</a>
+      <a href="#apps">Micro Apps</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1>Johan Barajas</h1>
+    <div class="role">Revit/AutoCAD Drafter & BIM Modeler · Civil Engineering Degree</div>
+    <p>I turn sketches, markups, and rough drafts into clean, accurate construction drawings, and I build small apps that automate repetitive work.</p>
+    <div class="tags">
+      <span>AutoCAD</span><span>Revit</span><span>Tekla Structures</span><span>SAP2000</span><span>Excel</span><span>Python</span><span>OSHA 30</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#drafting">See my work</a>
+      <a class="btn ghost" href="#contact">Contact me</a>
+    </div>
+  </div>
+</header>
+
+<section id="drafting">
+  <div class="wrap">
+    <div class="head">
+      <h2>Drafting & BIM</h2>
+      <p>Construction drawings, Revit models, and structural detailing.</p>
+    </div>
+    <div class="grid" id="drafting-grid"></div>
+  </div>
+</section>
+
+<section id="apps" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="head">
+      <h2>Barajas Labs · Micro Apps</h2>
+      <p>Small tools and websites I've built to solve real problems.</p>
+    </div>
+    <div class="grid" id="apps-grid"></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap" style="text-align:center">
+    <div class="head">
+      <h2>Let's work together</h2>
+      <p>New York City · Open to remote, hybrid, or on-site roles</p>
+    </div>
+    <div class="cta" style="justify-content:center">
+      <!-- ✏️ Cambia por tu correo y tu link de LinkedIn -->
+      <a class="btn" style="background:var(--accent);color:#fff" href="mailto:tucorreo@email.com">Email me</a>
+      <a class="btn" style="border:1px solid var(--line)" href="https://www.linkedin.com/in/tu-perfil" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer>© <span id="y"></span> Johan Barajas</footer>
+
+<script>
+/* =========================================================
+   ✏️ TUS DATOS — para agregar algo, copia un bloque { ... },
+   pégalo debajo, cambia los datos y guarda.
+   - imagen: nombre del archivo (ej. "inventario.png") en la misma carpeta.
+             Déjalo "" si aún no tienes y se muestran las iniciales.
+   - link:   déjalo "" si no hay link público (el botón sale como "Coming soon").
+   ========================================================= */
+
+const drafting = [
+  {
+    nombre: "Residential Floor Plan – Sketch to CAD",
+    descripcion: "Hand sketch redrafted into a clean, dimensioned floor plan ready for permit and construction.",
+    herramientas: ["AutoCAD"],
+    imagen: "",
+    link: ""
+  },
+  {
+    nombre: "Multi-Story Building – Revit Model",
+    descripcion: "Structural and architectural model with plans, sections, and schedules for a multi-story building.",
+    herramientas: ["Revit", "BIM"],
+    imagen: "",
+    link: ""
+  },
+  {
+    nombre: "Concrete & Steel Detailing",
+    descripcion: "Foundation, beam, column, and slab details for construction documents.",
+    herramientas: ["Tekla", "AutoCAD"],
+    imagen: "",
+    link: ""
+  }
+];
+
+const apps = [
+  {
+    nombre: "Dispatch Ops Dashboard",
+    descripcion: "Control panel for a transportation dispatch team: live clocks for 8 U.S. cities across 4 time zones and one-click access to supplier portals. Demo with sample data.",
+    herramientas: ["HTML", "CSS", "JavaScript"],
+    imagen: "",
+    link: "dispatch-dashboard/"
+  },
+  {
+    nombre: "Accessory Inventory App",
+    descripcion: "Tracks phone accessory stock for retail stores: entries, sales, and low-stock alerts. In daily use.",
+    herramientas: ["Web App", "AI tools"],
+    imagen: "",
+    link: ""
+  },
+  {
+    nombre: "Dispatch Alert Automation",
+    descripcion: "Reads dispatch board screenshots and sends automatic departure alerts to the team via Telegram.",
+    herramientas: ["Python", "OCR", "Telegram"],
+    imagen: "",
+    link: ""
+  },
+  {
+    nombre: "Draftline NYC Website",
+    descripcion: "Landing page for my drafting services business: services, before/after drawings, and contact form.",
+    herramientas: ["Web Design", "AI tools"],
+    imagen: "",
+    link: ""
+  }
+];
+
+/* ====== No necesitas editar debajo de esta línea ====== */
+function initials(t){return t.split(/\s+/).filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join("")}
+function render(list, el, btnText){
+  el.innerHTML = list.map(p => `
+    <article class="card">
+      <div class="thumb">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}" loading="lazy">` : initials(p.nombre)}</div>
+      <div class="body">
+        <h3>${p.nombre}</h3>
+        <p>${p.descripcion}</p>
+        <div class="chips">${(p.herramientas||[]).map(h=>`<span>${h}</span>`).join("")}</div>
+        ${p.link
+          ? `<a class="open" href="${p.link}" target="_blank" rel="noopener">${btnText} →</a>`
+          : `<span class="open off">Coming soon</span>`}
+      </div>
+    </article>`).join("");
+}
+render(drafting, document.getElementById("drafting-grid"), "View project");
+render(apps, document.getElementById("apps-grid"), "Open app");
+document.getElementById("y").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

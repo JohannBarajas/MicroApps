@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dispatch Ops Dashboard · Demo</title>
+<meta name="description" content="Demo of an internal dispatch operations dashboard: live multi-time-zone clocks and one-click portal access. Sample data only.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f141c; --panel:#171e29; --panel2:#1e2735; --line:#2a3546;
+    --text:#e8edf4; --muted:#8c99ab; --accent:#4f8cff; --ok:#3fbf7f; --warn:#f2b84b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:40px}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+  header{border-bottom:1px solid var(--line);background:var(--panel)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 16px;flex-wrap:wrap}
+  h1{font-size:20px;letter-spacing:-.01em}
+  h1 small{color:var(--muted);font-weight:500;font-size:14px;margin-left:6px}
+  .now{font-family:"JetBrains Mono",monospace;color:var(--muted);font-size:14px}
+  .demo{background:rgba(242,184,75,.12);border:1px solid rgba(242,184,75,.35);color:var(--warn);
+        padding:10px 14px;border-radius:10px;font-size:14px;margin:20px 0}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:28px 0 12px}
+
+  .clocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .clock{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+  .clock .city{font-weight:600}
+  .clock .zone{font-size:12px;color:var(--muted)}
+  .clock .time{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:700}
+  .tz-pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;margin-top:4px;border:1px solid var(--line);color:var(--muted)}
+
+  .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .tabs button{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer}
+  .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .table{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .row{display:grid;grid-template-columns:1.3fr 1.3fr auto;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:none}
+  .row.head{background:var(--panel2);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .mono{font-family:"JetBrains Mono",monospace;font-size:14px}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:7px 12px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:#fff}
+
+  .pickups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .pick{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .pick b{display:block}
+  .pick span{color:var(--muted);font-size:14px}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
+         background:var(--ok);color:#06210f;font-weight:600;padding:10px 16px;border-radius:10px;transition:.2s;font-size:14px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:36px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  @media (max-width:560px){
+    .row{grid-template-columns:1fr auto}
+    .row .user{grid-column:1/2;grid-row:2}
+    .row.head{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Dispatch Ops Dashboard <small>Demo</small></h1>
+    <div class="now" id="local"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="demo">⚠ Demo version with sample data. The original runs internally for a U.S. transportation dispatch team.</div>
+
+  <h2>Live city clocks</h2>
+  <div class="clocks" id="clocks"></div>
+
+  <h2>Supplier portals · one-click access</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="table" id="portal"></div>
+
+  <h2>Pickup locations</h2>
+  <div class="pickups" id="pickups"></div>
+
+  <footer>Built by Johan Barajas · <a href="../">Back to portfolio</a></footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- SAMPLE DATA (fictional) ---------- */
+const cities = [
+  { name:"Phoenix",         state:"AZ", tz:"America/Phoenix" },
+  { name:"Seattle",         state:"WA", tz:"America/Los_Angeles" },
+  { name:"Denver",          state:"CO", tz:"America/Denver" },
+  { name:"Salt Lake City",  state:"UT", tz:"America/Denver" },
+  { name:"New York",        state:"NY", tz:"America/New_York" },
+  { name:"Boston",          state:"MA", tz:"America/New_York" },
+  { name:"Columbus",        state:"OH", tz:"America/New_York" },
+  { name:"Fort Lauderdale", state:"FL", tz:"America/New_York" }
+];
+
+const portals = {
+  "Portal A": [
+    { city:"Boston",   user:"demo_bos_a" },
+    { city:"Denver",   user:"demo_den_a" },
+    { city:"Seattle",  user:"demo_sea_a" },
+    { city:"Phoenix",  user:"demo_phx_a" },
+    { city:"New York", user:"demo_nyc_a" }
+  ],
+  "Portal B": [
+    { city:"BOS", user:"demo_bos_b" },
+    { city:"CMH", user:"demo_cmh_b" },
+    { city:"SLC", user:"demo_slc_b" },
+    { city:"LGA", user:"demo_lga_b" },
+    { city:"JFK", user:"demo_jfk_b" }
+  ]
+};
+
+const pickups = [
+  { place:"Airport Terminal B", note:"Door 4 · Ground transportation" },
+  { place:"Downtown Hotel",     note:"Main lobby entrance" },
+  { place:"Crew Hotel North",   note:"Side driveway · 24/7" },
+  { place:"Rail Station",       note:"East exit · Lot C" }
+];
+
+/* ---------- CLOCKS ---------- */
+const fmt = tz => new Intl.DateTimeFormat("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZone:tz}).format(new Date());
+const abbr = tz => new Intl.DateTimeFormat("en-US",{timeZone:tz,timeZoneName:"short"}).formatToParts(new Date()).find(p=>p.type==="timeZoneName").value;
+
+const clocksEl = document.getElementById("clocks");
+clocksEl.innerHTML = cities.map((c,i)=>`
+  <div class="clock">
+    <div><div class="city">${c.name}</div><div class="zone">${c.state}</div><span class="tz-pill">${abbr(c.tz)}</span></div>
+    <div class="time" id="t${i}">${fmt(c.tz)}</div>
+  </div>`).join("");
+
+function tick(){
+  cities.forEach((c,i)=>document.getElementById("t"+i).textContent = fmt(c.tz));
+  document.getElementById("local").textContent = "Your time " + new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+}
+tick(); setInterval(tick,1000);
+
+/* ---------- PORTALS ---------- */
+const tabsEl = document.getElementById("tabs");
+const portalEl = document.getElementById("portal");
+let current = Object.keys(portals)[0];
+
+function renderTabs(){
+  tabsEl.innerHTML = Object.keys(portals).map(k=>`<button class="${k===current?'on':''}" data-k="${k}">${k}</button>`).join("");
+  tabsEl.querySelectorAll("button").forEach(b=>b.onclick=()=>{current=b.dataset.k;renderTabs();renderPortal();});
+}
+function renderPortal(){
+  portalEl.innerHTML = `<div class="row head"><div>City</div><div>Username</div><div></div></div>` +
+    portals[current].map(p=>`
+      <div class="row">
+        <div>${p.city}</div>
+        <div class="user mono">${p.user}</div>
+        <button class="btn" data-u="${p.user}">Copy &amp; open login</button>
+      </div>`).join("");
+  portalEl.querySelectorAll(".btn").forEach(b=>b.onclick=()=>copyAndOpen(b.dataset.u));
+}
+function copyAndOpen(user){
+  const done = ()=>toast(`Copied “${user}” · login would open in a new tab`);
+  if(navigator.clipboard){ navigator.clipboard.writeText(user).then(done,done); } else { done(); }
+}
+renderTabs(); renderPortal();
+
+/* ---------- PICKUPS ---------- */
+document.getElementById("pickups").innerHTML = pickups.map(p=>`<div class="pick"><b>${p.place}</b><span>${p.note}</span></div>`).join("");
+
+/* ---------- TOAST ---------- */
+let tt;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2200);
+}
+</script>
+</body>
+</html>

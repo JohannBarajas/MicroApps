@@ -61,6 +61,10 @@
   .body p{color:var(--muted);font-size:15px;flex:1}
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chips span{font-size:12px;background:var(--bg);border:1px solid var(--line);padding:3px 8px;border-radius:6px;color:var(--muted)}
+  .details{margin:2px 0 4px 18px;color:var(--muted);font-size:14px}
+  .details li{margin:3px 0}
+  .url{font-size:13px;color:var(--accent);word-break:break-all}
+  .url:hover{text-decoration:underline}
   .open{margin-top:8px;align-self:flex-start;background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font-size:14px;font-weight:600}
   .open.off{background:var(--line);color:var(--muted);pointer-events:none}
 
@@ -172,7 +176,12 @@ const drafting = [
 const apps = [
   {
     nombre: "Dispatch Ops Dashboard",
-    descripcion: "All-in-one dispatch portal for an airline-crew transportation company operating in 8 cities, 9 airports, and 4 time zones: live clocks, supplier portals, accounts, fleet cameras, and company guidelines.",
+    descripcion: "All-in-one portal for an airline-crew transportation company operating 24/7 in 8 U.S. cities, 9 airports, and 4 time zones.",
+    detalles: [
+      "Challenge: every city and airline used a different supplier portal, and dispatchers had to track local time in each city.",
+      "Solution: one screen with live clocks per city, one-click supplier logins, team accounts, fleet camera status, and company guidelines.",
+      "Result: faster logins and shift handovers, fewer time-zone mistakes, and one link to train new dispatchers."
+    ],
     herramientas: ["HTML", "CSS", "JavaScript"],
     imagen: "",
     link: "dispatch-dashboard/"
@@ -208,7 +217,9 @@ function render(list, el, btnText){
       <div class="thumb">${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}" loading="lazy">` : initials(p.nombre)}</div>
       <div class="body">
         <h3>${p.nombre}</h3>
+        ${p.link ? `<a class="url" href="${p.link}" target="_blank" rel="noopener">🔗 ${new URL(p.link, location.href).href.replace(/^https?:\/\//,'')}</a>` : ''}
         <p>${p.descripcion}</p>
+        ${p.detalles ? `<ul class="details">${p.detalles.map(d=>`<li>${d}</li>`).join("")}</ul>` : ''}
         <div class="chips">${(p.herramientas||[]).map(h=>`<span>${h}</span>`).join("")}</div>
         ${p.link
           ? `<a class="open" href="${p.link}" target="_blank" rel="noopener">${btnText} →</a>`

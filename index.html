@@ -27,6 +27,8 @@
   .lang button.on{background:#fff;color:var(--navy)}
   header h1{font-size:clamp(28px,6vw,42px);letter-spacing:-.03em;line-height:1.1}
   header p{margin-top:10px;color:#cdd8ea;max-width:560px}
+  .notice{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:620px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:12px 14px;font-size:14px;color:#dbe4f2}
+  .notice svg{flex:none;width:18px;height:18px;margin-top:2px}
   .count{display:inline-block;margin-top:18px;font-size:13px;padding:5px 12px;border:1px solid rgba(255,255,255,.35);border-radius:999px}
 
   main{padding:40px 0 24px}
@@ -85,6 +87,10 @@
     </div>
     <h1>Barajas Labs · Micro Apps</h1>
     <p id="intro"></p>
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span id="notice"></span>
+    </div>
     <span class="count" id="count"></span>
   </div>
 </header>
@@ -217,9 +223,11 @@ const apps = [
 /* ====== Textos fijos de la página ====== */
 const ui = {
   en: { intro:"Small web apps and pages I've built to solve real problems for businesses: dashboards, landing pages, and catalogs.",
+        notice:"Data privacy: these are sample versions of my projects. To protect my clients, real customer data, accounts, passwords, and private business information are never published; where needed, they are replaced with fictional data.",
         count:n=>`${n} apps`, open:"Open app →", label:"APP", foot:"Built by Johan Barajas",
         tags:{"Challenge":"Challenge","Solution":"Solution","Result":"Result"} },
   es: { intro:"Pequeñas apps y páginas web que he creado para resolver problemas reales de negocios: paneles, páginas de promociones y catálogos.",
+        notice:"Protección de datos: estas son versiones de muestra de mis proyectos. Para proteger a mis clientes, nunca se publican datos reales de sus clientes, cuentas, contraseñas ni información privada del negocio; cuando es necesario, se reemplazan por datos ficticios.",
         count:n=>`${n} apps`, open:"Abrir app →", label:"APP", foot:"Hecho por Johan Barajas" }
 };
 
@@ -231,6 +239,7 @@ function render(lang){
   const t = ui[lang];
   document.documentElement.lang = lang;
   document.getElementById("intro").textContent = t.intro;
+  document.getElementById("notice").textContent = t.notice;
   document.getElementById("count").textContent = t.count(apps.length);
   document.getElementById("foot").textContent = t.foot;
   document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));

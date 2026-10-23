@@ -47,6 +47,22 @@
   .pick b{display:block}
   .pick span{color:var(--muted);font-size:14px}
 
+  .accounts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .acct{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+  .acct .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .acct .line{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .acct .pw{letter-spacing:.15em}
+  .btns{display:flex;gap:6px}
+  .cams{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+  .cam{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+  .cam .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .cam small{display:block;color:var(--muted);font-size:12px}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+  summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+  summary::after{content:"+";color:var(--muted)}
+  details[open] summary::after{content:"–"}
+  details ol{padding:0 16px 14px 36px;color:var(--muted);font-size:15px}
+  details li{margin:4px 0}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
          background:var(--ok);color:#06210f;font-weight:600;padding:10px 16px;border-radius:10px;transition:.2s;font-size:14px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -70,7 +86,7 @@
 </header>
 
 <main class="wrap">
-  <div class="demo">⚠ Demo version with sample data. The original runs internally for a U.S. transportation dispatch team.</div>
+  <div class="demo">⚠ Demo with fictional data. Built for a transportation operation running in several U.S. cities at once, which needed one portal for each city's time, suppliers, accounts, cameras, and company guidelines.</div>
 
   <h2>Live city clocks</h2>
   <div class="clocks" id="clocks"></div>
@@ -81,6 +97,16 @@
 
   <h2>Pickup locations</h2>
   <div class="pickups" id="pickups"></div>
+
+  <h2>Team accounts</h2>
+  <div class="accounts" id="accounts"></div>
+
+  <h2>Fleet cameras</h2>
+  <div class="acct" id="camLogin"></div>
+  <div class="cams" id="cams"></div>
+
+  <h2>Company guidelines</h2>
+  <div id="rules"></div>
 
   <footer>Built by Johan Barajas · <a href="../">Back to portfolio</a></footer>
 </main>
@@ -168,6 +194,62 @@ renderTabs(); renderPortal();
 
 /* ---------- PICKUPS ---------- */
 document.getElementById("pickups").innerHTML = pickups.map(p=>`<div class="pick"><b>${p.place}</b><span>${p.note}</span></div>`).join("");
+
+/* ---------- ACCOUNTS (fictional) ---------- */
+const accounts = [
+  { label:"Dispatch inbox",       user:"dispatch@demo-transit.com", pass:"Demo-Mail-01" },
+  { label:"Change orders inbox",  user:"orders@demo-transit.com",   pass:"Demo-Mail-02" },
+  { label:"Partner trips portal", user:"demo_partner",              pass:"Demo-Trips-03" },
+  { label:"Payroll portal",       user:"demo_payroll",              pass:"Demo-Pay-04" }
+];
+const camAccount = { label:"Fleet camera system", user:"cams@demo-transit.com", pass:"Demo-Cam-05" };
+const cams = [
+  { unit:"Bus 101", city:"Phoenix",  on:true },
+  { unit:"Bus 114", city:"Denver",   on:true },
+  { unit:"Van 207", city:"Seattle",  on:false },
+  { unit:"Bus 122", city:"New York", on:true },
+  { unit:"Van 215", city:"Boston",   on:true },
+  { unit:"Bus 130", city:"Columbus", on:false }
+];
+
+function acctCard(a,i){
+  return `<div class="label">${a.label}</div>
+    <div class="line"><span class="mono">${a.user}</span><button class="btn" data-copy="${a.user}">Copy</button></div>
+    <div class="line"><span class="mono pw" id="pw${i}">••••••••</span>
+      <span class="btns"><button class="btn" data-show="${i}">Show</button><button class="btn" data-copy="${a.pass}">Copy</button></span></div>`;
+}
+const allAccts = [...accounts, camAccount];
+document.getElementById("accounts").innerHTML = accounts.map((a,i)=>`<div class="acct">${acctCard(a,i)}</div>`).join("");
+document.getElementById("camLogin").innerHTML = acctCard(camAccount, accounts.length);
+document.getElementById("cams").innerHTML = cams.map(c=>`<div class="cam"><span class="dot" style="background:${c.on?'var(--ok)':'#e5534b'}"></span>${c.unit}<small>${c.city} · ${c.on?'Online':'Offline'}</small></div>`).join("");
+
+document.addEventListener("click", e=>{
+  const c=e.target.closest("[data-copy]");
+  if(c){ const v=c.dataset.copy, d=()=>toast("Copied to clipboard"); navigator.clipboard?navigator.clipboard.writeText(v).then(d,d):d(); }
+  const s=e.target.closest("[data-show]");
+  if(s){ const i=+s.dataset.show, el=document.getElementById("pw"+i), hidden=el.textContent.startsWith("•");
+    el.textContent = hidden ? allAccts[i].pass : "••••••••"; s.textContent = hidden ? "Hide" : "Show"; }
+});
+
+/* ---------- COMPANY GUIDELINES (sample) ---------- */
+const rules = [
+  { title:"Shift start", items:[
+    "Log in to every city portal and confirm today's trips before 6:00 AM local time.",
+    "Check fleet cameras: report any offline unit to the city supervisor.",
+    "Review overnight emails in both team inboxes." ]},
+  { title:"Pickups & departures", items:[
+    "Confirm each pickup with the driver 30 minutes before departure.",
+    "Always use the local time of the city, not your own time zone.",
+    "If a driver is 10+ minutes late, notify the client and the supervisor." ]},
+  { title:"Changes & communication", items:[
+    "Every trip change must be logged in the change orders inbox.",
+    "Reply to clients within 15 minutes during operating hours.",
+    "Never share account credentials outside the dispatch team." ]},
+  { title:"End of shift", items:[
+    "Send a handover note with open issues to the next dispatcher.",
+    "Log out of all portals and lock your workstation." ]}
+];
+document.getElementById("rules").innerHTML = rules.map((r,i)=>`<details ${i===0?'open':''}><summary>${r.title}</summary><ol>${r.items.map(t=>`<li>${t}</li>`).join("")}</ol></details>`).join("");
 
 /* ---------- TOAST ---------- */
 let tt;

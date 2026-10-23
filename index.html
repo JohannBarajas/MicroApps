@@ -38,6 +38,14 @@
   /* mini preview: phone frame with the live page scaled down */
   .preview{display:block;width:200px;height:400px;border-radius:22px;border:6px solid #1b2230;background:#fff;overflow:hidden;position:relative;box-shadow:0 8px 20px rgba(15,42,74,.15);align-self:start}
   .preview iframe{width:400px;height:800px;border:0;transform:scale(.5);transform-origin:0 0;pointer-events:none;background:#fff}
+  .preview.moving iframe{animation:scrollPreview var(--dur,16s) ease-in-out infinite;animation-delay:var(--delay,0s)}
+  .preview:hover iframe{animation-play-state:paused}
+  @keyframes scrollPreview{
+    0%,12%  {transform:translateY(0) scale(.5)}
+    48%,62% {transform:translateY(calc(var(--dist,0px) * -1)) scale(.5)}
+    98%,100%{transform:translateY(0) scale(.5)}
+  }
+  @media (prefers-reduced-motion:reduce){ .preview.moving iframe{animation:none} }
   .preview::after{content:"";position:absolute;inset:0} /* whole preview is clickable */
   .preview .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);background:var(--accent-soft);z-index:-1}
 
@@ -235,6 +243,27 @@ document.getElementById("list").innerHTML = apps.map(a => `
       </div>
     </div>
   </article>`).join("");
+
+/* Auto-scroll each preview through its full page */
+const VIEW_H = 388; // visible height inside the phone frame (px)
+function setupScroll(frame, i){
+  const box = frame.parentElement;
+  const measure = () => {
+    let h = 1600;
+    try { const d = frame.contentDocument; h = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight); } catch(e) {}
+    h = Math.min(Math.max(h, 800), 3200);
+    frame.style.height = h + "px";
+    const dist = h * 0.5 - VIEW_H;
+    if (dist > 20) {
+      box.style.setProperty("--dist", dist + "px");
+      box.style.setProperty("--dur", Math.min(10 + dist / 60, 24) + "s");
+      box.style.setProperty("--delay", (i * 1.5) + "s");
+      box.classList.add("moving");
+    }
+  };
+  frame.addEventListener("load", () => { measure(); setTimeout(measure, 2000); });
+}
+document.querySelectorAll(".preview iframe").forEach(setupScroll);
 
 document.querySelectorAll(".lang button").forEach(b => b.onclick = () => render(b.dataset.lang));
 

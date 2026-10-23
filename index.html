@@ -14,47 +14,69 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:820px;margin:0 auto;padding:0 16px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px}
 
   header{background:var(--navy);color:#fff;position:relative;overflow:hidden}
   header::before{content:"";position:absolute;inset:0;opacity:.1;
     background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
     background-size:32px 32px}
-  header .wrap{position:relative;padding:56px 16px 48px}
+  header .wrap{position:relative;padding:48px 16px 44px}
+  .top{display:flex;justify-content:flex-end;margin-bottom:22px}
+  .lang{display:flex;background:rgba(255,255,255,.12);border-radius:999px;padding:4px;gap:4px}
+  .lang button{font:inherit;font-size:13px;font-weight:600;color:#cdd8ea;background:transparent;border:none;padding:6px 14px;border-radius:999px;cursor:pointer}
+  .lang button.on{background:#fff;color:var(--navy)}
   header h1{font-size:clamp(28px,6vw,42px);letter-spacing:-.03em;line-height:1.1}
   header p{margin-top:10px;color:#cdd8ea;max-width:560px}
   .count{display:inline-block;margin-top:18px;font-size:13px;padding:5px 12px;border:1px solid rgba(255,255,255,.35);border-radius:999px}
 
   main{padding:40px 0 24px}
-  .list{display:flex;flex-direction:column;gap:18px}
+  .list{display:flex;flex-direction:column;gap:20px}
 
-  .app{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s}
+  .app{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;grid-template-columns:200px 1fr;gap:24px;transition:box-shadow .15s}
   .app:hover{box-shadow:0 10px 28px rgba(15,42,74,.08)}
-  .app .num{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.08em}
-  .app h2{font-size:20px;letter-spacing:-.01em}
+
+  /* mini preview: phone frame with the live page scaled down */
+  .preview{display:block;width:200px;height:400px;border-radius:22px;border:6px solid #1b2230;background:#fff;overflow:hidden;position:relative;box-shadow:0 8px 20px rgba(15,42,74,.15);align-self:start}
+  .preview iframe{width:400px;height:800px;border:0;transform:scale(.5);transform-origin:0 0;pointer-events:none;background:#fff}
+  .preview::after{content:"";position:absolute;inset:0} /* whole preview is clickable */
+  .preview .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);background:var(--accent-soft);z-index:-1}
+
+  .info{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .num{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.08em}
+  .info h2{font-size:20px;letter-spacing:-.01em}
   .url{font-size:14px;color:var(--accent);font-weight:500;word-break:break-all}
   .url:hover{text-decoration:underline}
-  .app p{color:var(--muted)}
+  .info p{color:var(--muted)}
   .details{list-style:none;display:flex;flex-direction:column;gap:6px}
   .details li{font-size:15px;color:var(--muted);padding-left:14px;position:relative}
   .details li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
   .details b{color:var(--text);font-weight:600}
-  .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:4px}
+  .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:6px}
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chips span{font-size:12px;background:var(--bg);border:1px solid var(--line);padding:3px 8px;border-radius:6px;color:var(--muted)}
-  .open{background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font-size:14px;font-weight:600}
+  .open{background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
   .open:hover{opacity:.9}
 
   footer{border-top:1px solid var(--line);margin-top:24px;padding:28px 0 36px;color:var(--muted);font-size:14px;text-align:center}
-  footer a{color:var(--accent)}
+
+  @media (max-width:640px){
+    .app{grid-template-columns:1fr;gap:16px}
+    .preview{margin:0 auto}
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap">
+    <div class="top">
+      <div class="lang">
+        <button data-lang="en">English</button>
+        <button data-lang="es">Español</button>
+      </div>
+    </div>
     <h1>Barajas Labs · Micro Apps</h1>
-    <p>Small web apps and pages I've built to solve real problems for businesses: dashboards, landing pages, and catalogs.</p>
+    <p id="intro"></p>
     <span class="count" id="count"></span>
   </div>
 </header>
@@ -63,68 +85,140 @@
   <div class="list" id="list"></div>
 </main>
 
-<footer class="wrap">
-  Built by Johan Barajas
-</footer>
+<footer class="wrap" id="foot"></footer>
 
 <script>
 /* =========================================================
    ✏️ TUS APPS — para agregar una nueva, copia un bloque { ... },
    pégalo arriba o abajo, cambia los datos y guarda.
-   detalles: ["Challenge: ...", "Solution: ...", "Result: ..."]
+   Cada texto va en inglés (en) y español (es).
    ========================================================= */
 const apps = [
   {
-    nombre: "JB Tech – Phone Store Catalog",
     link: "https://johannbarajas.github.io/JB_TECH/",
-    descripcion: "Online catalog for an independent phone reseller, where customers browse phones with photos and prices from their own phone.",
-    detalles: [
-      "Challenge: the seller needed a simple way to show available phones and update stock and prices without touching code.",
-      "Solution: public gallery organized by iPhone, Samsung, and other brands, with a WhatsApp button and share link on every phone. A private admin login lets the owner add, edit, or remove phones, crop and rotate photos, and add text on them.",
-      "Result: the catalog updates in seconds from the phone. Cost prices and suppliers stay private and only the admin can see them."
-    ],
-    herramientas: ["JavaScript", "Supabase (database, login, storage)", "GitHub Actions"]
+    herramientas: ["JavaScript", "Supabase", "GitHub Actions"],
+    en: {
+      nombre: "JB Tech – Phone Store Catalog",
+      descripcion: "Online catalog for an independent phone reseller, where customers browse phones with photos and prices from their own phone.",
+      detalles: [
+        "Challenge: the seller needed a simple way to show available phones and update stock and prices without touching code.",
+        "Solution: public gallery organized by iPhone, Samsung, and other brands, with a WhatsApp button and share link on every phone. A private admin login lets the owner add, edit, or remove phones, crop and rotate photos, and add text on them.",
+        "Result: the catalog updates in seconds from the phone. Cost prices and suppliers stay private and only the admin can see them."
+      ]
+    },
+    es: {
+      nombre: "JB Tech – Catálogo de celulares",
+      descripcion: "Catálogo en línea para un vendedor independiente de celulares, donde los clientes ven los equipos con fotos y precios desde su propio teléfono.",
+      detalles: [
+        "Reto: el vendedor necesitaba mostrar los celulares disponibles y actualizar inventario y precios sin tocar código.",
+        "Solución: galería pública organizada por iPhone, Samsung y otras marcas, con botón de WhatsApp y enlace para compartir en cada equipo. Un acceso privado de administrador permite agregar, editar o eliminar celulares, recortar y girar fotos y escribir texto sobre ellas.",
+        "Resultado: el catálogo se actualiza en segundos desde el celular. Los costos y proveedores quedan privados y solo el administrador los ve."
+      ]
+    }
   },
   {
-    nombre: "Dispatch Ops Dashboard",
     link: "dispatch-dashboard/",
-    descripcion: "All-in-one portal for an airline-crew transportation company operating 24/7 in 8 U.S. cities, 9 airports, and 4 time zones.",
-    detalles: [
-      "Challenge: every city and airline used a different supplier portal, and dispatchers had to track local time in each city.",
-      "Solution: one screen with live clocks per city, one-click supplier logins, team accounts, fleet camera status, and company guidelines.",
-      "Result: faster logins and shift handovers, fewer time-zone mistakes, and one link to train new dispatchers."
-    ],
-    herramientas: ["HTML", "CSS", "JavaScript"]
+    herramientas: ["HTML", "CSS", "JavaScript"],
+    en: {
+      nombre: "Dispatch Ops Dashboard",
+      descripcion: "All-in-one portal for an airline-crew transportation company operating 24/7 in 8 U.S. cities, 9 airports, and 4 time zones.",
+      detalles: [
+        "Challenge: every city and airline used a different supplier portal, and dispatchers had to track local time in each city.",
+        "Solution: one screen with live clocks per city, one-click supplier logins, team accounts, fleet camera status, and company guidelines.",
+        "Result: faster logins and shift handovers, fewer time-zone mistakes, and one link to train new dispatchers."
+      ]
+    },
+    es: {
+      nombre: "Panel de operaciones de despacho",
+      descripcion: "Portal todo en uno para una empresa de transporte de tripulaciones de aerolíneas que opera 24/7 en 8 ciudades de EE.UU., 9 aeropuertos y 4 zonas horarias.",
+      detalles: [
+        "Reto: cada ciudad y aerolínea usaba un portal de proveedor distinto, y los despachadores debían seguir la hora local de cada ciudad.",
+        "Solución: una sola pantalla con relojes en vivo por ciudad, acceso con un clic a los portales, cuentas del equipo, estado de las cámaras de la flota y normas de la empresa.",
+        "Resultado: inicios de sesión y cambios de turno más rápidos, menos errores de zona horaria y un solo link para capacitar a nuevos despachadores."
+      ]
+    }
   },
   {
-    nombre: "July Deals – Phone Store Landing Page",
     link: "https://johannbarajas.github.io/PROMOCIONES-TOTAL-JULIO/",
-    descripcion: "Bilingual promo page for a phone retail store in the Bronx, built for the store's monthly deals.",
-    detalles: [
-      "Challenge: the store needed a simple link to share its July offers with Spanish- and English-speaking customers.",
-      "Solution: mobile-first page with 3 featured devices and prices, a one-tap Spanish/English switch, a WhatsApp chat button, and Google Maps directions.",
-      "Result: one link ready for WhatsApp, social media, or a QR code in the store, with Google Analytics to track visits."
-    ],
-    herramientas: ["HTML", "CSS", "JavaScript", "Google Analytics"]
+    herramientas: ["HTML", "CSS", "JavaScript", "Google Analytics"],
+    en: {
+      nombre: "July Deals – Phone Store Landing Page",
+      descripcion: "Bilingual promo page for a phone retail store in the Bronx, built for the store's monthly deals.",
+      detalles: [
+        "Challenge: the store needed a simple link to share its July offers with Spanish- and English-speaking customers.",
+        "Solution: mobile-first page with 3 featured devices and prices, a one-tap Spanish/English switch, a WhatsApp chat button, and Google Maps directions.",
+        "Result: one link ready for WhatsApp, social media, or a QR code in the store, with Google Analytics to track visits."
+      ]
+    },
+    es: {
+      nombre: "Ofertas de julio – Página de promociones",
+      descripcion: "Página bilingüe de promociones para una tienda de celulares en el Bronx, hecha para las ofertas del mes.",
+      detalles: [
+        "Reto: la tienda necesitaba un link sencillo para compartir sus ofertas de julio con clientes que hablan español e inglés.",
+        "Solución: página pensada para celular con 3 equipos destacados y sus precios, cambio de idioma con un toque, botón de WhatsApp y ruta en Google Maps.",
+        "Resultado: un solo link listo para WhatsApp, redes sociales o un código QR en la tienda, con Google Analytics para medir las visitas."
+      ]
+    }
   }
 ];
 
+/* ====== Textos fijos de la página ====== */
+const ui = {
+  en: { intro:"Small web apps and pages I've built to solve real problems for businesses: dashboards, landing pages, and catalogs.",
+        count:n=>`${n} apps`, open:"Open app →", label:"APP", foot:"Built by Johan Barajas",
+        tags:{"Challenge":"Challenge","Solution":"Solution","Result":"Result"} },
+  es: { intro:"Pequeñas apps y páginas web que he creado para resolver problemas reales de negocios: paneles, páginas de promociones y catálogos.",
+        count:n=>`${n} apps`, open:"Abrir app →", label:"APP", foot:"Hecho por Johan Barajas" }
+};
+
 /* ====== No necesitas editar debajo de esta línea ====== */
 const pretty = l => new URL(l, location.href).href.replace(/^https?:\/\//, "").replace(/\/$/, "");
-const bold = d => d.replace(/^(Challenge|Solution|Result):/, "<b>$1:</b>");
-document.getElementById("list").innerHTML = apps.map((a, i) => `
+const bold = d => d.replace(/^(Challenge|Solution|Result|Reto|Solución|Resultado):/, "<b>$1:</b>");
+
+function render(lang){
+  const t = ui[lang];
+  document.documentElement.lang = lang;
+  document.getElementById("intro").textContent = t.intro;
+  document.getElementById("count").textContent = t.count(apps.length);
+  document.getElementById("foot").textContent = t.foot;
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+
+  document.querySelectorAll(".app").forEach((card, i) => {
+    const a = apps[i], c = a[lang];
+    card.querySelector(".num").textContent = `${t.label} ${String(i + 1).padStart(2, "0")}`;
+    card.querySelector("h2").textContent = c.nombre;
+    card.querySelector("p").textContent = c.descripcion;
+    card.querySelector(".details").innerHTML = c.detalles.map(d => `<li>${bold(d)}</li>`).join("");
+    card.querySelector(".open").textContent = t.open;
+  });
+  try { localStorage.setItem("mlang", lang); } catch(e) {}
+}
+
+/* Build cards once (previews load only once, language switch just swaps text) */
+document.getElementById("list").innerHTML = apps.map(a => `
   <article class="app">
-    <div class="num">APP ${String(i + 1).padStart(2, "0")}</div>
-    <h2>${a.nombre}</h2>
-    <a class="url" href="${a.link}" target="_blank" rel="noopener">🔗 ${pretty(a.link)}</a>
-    <p>${a.descripcion}</p>
-    ${a.detalles ? `<ul class="details">${a.detalles.map(d => `<li>${bold(d)}</li>`).join("")}</ul>` : ""}
-    <div class="foot">
-      <div class="chips">${(a.herramientas || []).map(h => `<span>${h}</span>`).join("")}</div>
-      <a class="open" href="${a.link}" target="_blank" rel="noopener">Open app →</a>
+    <a class="preview" href="${a.link}" target="_blank" rel="noopener" aria-label="Preview">
+      <span class="loading">Loading…</span>
+      <iframe src="${a.link}" loading="lazy" tabindex="-1" scrolling="no" title="Preview"></iframe>
+    </a>
+    <div class="info">
+      <div class="num"></div>
+      <h2></h2>
+      <a class="url" href="${a.link}" target="_blank" rel="noopener">🔗 ${pretty(a.link)}</a>
+      <p></p>
+      <ul class="details"></ul>
+      <div class="foot">
+        <div class="chips">${a.herramientas.map(h => `<span>${h}</span>`).join("")}</div>
+        <a class="open" href="${a.link}" target="_blank" rel="noopener"></a>
+      </div>
     </div>
   </article>`).join("");
-document.getElementById("count").textContent = apps.length + " apps";
+
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => render(b.dataset.lang));
+
+let start = "en";
+try { start = localStorage.getItem("mlang") || ((navigator.language || "").startsWith("es") ? "es" : "en"); } catch(e) {}
+render(start);
 </script>
 </body>
 </html>
